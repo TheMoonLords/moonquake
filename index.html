@@ -1,7 +1,50 @@
 <head>
 	<style>
+		@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap");
 		body {
 			margin: 0;
+			overflow: hidden;
+			font-family: "IBM Plex Mono", monospace;
+		}
+		#yearSelector {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 60px;
+			background-color: #00000000;
+			color: #fff;
+			z-index: 100;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		#yearSelector label {
+			margin-right: 10px; /* Added margin for spacing */
+		}
+		#yearSelector input {
+			margin-right: 10px; /* Added margin for spacing */
+		}
+		#yearSelector button {
+			margin-left: 10px; /* Added margin for spacing */
+		}
+
+		#autoRotate {
+			margin-left: 10px; /* Added margin for spacing */
+		}
+		button {
+			padding: 3px;
+			color: #eceff4;
+			background-color: #3a3c42;
+			border-style: none;
+			border-radius: 5px;
+		}
+		button:active {
+			background-color: #222326;
+		}
+		input {
+			background-color: #3a3c42;
+			color: #eceff4;
 		}
 	</style>
 	<script src="https://unpkg.com/d3-array"></script>
@@ -9,7 +52,7 @@
 	<script src="https://unpkg.com/d3-dsv"></script>
 	<script src="https://unpkg.com/globe.gl"></script>
 	<body>
-		<div>
+		<div id="yearSelector">
 			<label for="startYear">Start Year:</label>
 			<input
 				type="number"
@@ -29,8 +72,10 @@
 				value="1979"
 			/>
 			<button onclick="filterAndDisplayData()">Filter Data</button>
+			<button onClick="autoRotate()" id="autoRotate">Pause</button>
 		</div>
 		<div id="globeViz"></div>
+
 		<script>
 			const colorScale = d3.scaleOrdinal([
 				"orangered",
@@ -52,7 +97,7 @@
 				.ringPropagationSpeed(0.5)
 				.ringRepeatPeriod(1000)
 				.labelText("label")
-				.labelSize(1)
+				.labelSize(2)
 				.labelDotRadius(0.5)
 				.labelDotOrientation("top")
 				.labelColor((d) => colorScale(d.label))
@@ -64,8 +109,20 @@
         <div>Latitude: <b>${d.lat}</b></div>
         <div>Date: <b>${d.date}</b></div>
         <div>Agency: <b>${d.agency}</b></div>
-      `)
+      `
+				)
 				.onLabelClick((d) => window.open(d.url, "_blank"))(elem);
+
+			moon.controls().autoRotate = true;
+			moon.controls().autoRotateSpeed = -1;
+			function autoRotate() {
+				moon.controls().autoRotate = !moon.controls().autoRotate;
+				if (moon.controls().autoRotate) {
+					document.getElementById("autoRotate").innerHTML = "Pause";
+				} else {
+					document.getElementById("autoRotate").innerHTML = "Play";
+				}
+			}
 
 			fetch("./resources/apollo_missions.json")
 				.then((r) => r.json())
