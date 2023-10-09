@@ -87,7 +87,7 @@
 			]);
 
 			const elem = document.getElementById("globeViz");
-			const moon = Globe()
+			const moon = Globe({ rendererConfig: { precision: 'mediump' }})
 				.globeImageUrl("./resources/moon.tif")
 				.backgroundImageUrl("./resources/background.png")
 				.showGraticules(true)
